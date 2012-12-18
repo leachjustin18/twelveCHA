@@ -1,0 +1,144 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.ddiv">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <meta charset="utf-8">
+        <title>Untitled</title>
+        <script src="media/jquery-1.8.min.js" type="text/javascript" charset="utf-8" ></script>
+        <script src="media/jquery-ui.custom.min.js" type="text/javascript" charset="utf-8" ></script>
+
+         <link rel="stylesheet" type="text/css" href="media/main.css"/>
+        <link href='http://fonts.googleapis.com/css?family=Candal' rel='stylesheet' type='text/css'>
+        <script>
+    $(function() {
+   var selectedAnswers = [0,0,0,0,0,0,0], 
+     correctAnswers = [6, 3, 1, 7, 2, 5, 4];
+     selectedQuestion = null;
+   var $sel = {
+     answers: $('#a1, #a2, #a3, #a4, #a5, #a6, #a7'),
+     questions: $('#q1, #q2, #q3, #q4, #q5, #q6, #q7'),
+     ciImage : $('.cwImage1, .cwImage2, .cwImage3, .cwImage4, .cwImage5, .cwImage6, .cwImage7'), 
+     allQuestions: $('.questions'),
+     explanation: $('.explanation'),
+     principles: $('.principles'),
+     exampleContent: $('#exampleContent'),
+     answersCorrect : $('#answersCorrect')
+   }
+
+   $sel.answers.draggable({
+     revert: "invalid"
+     ,start: function(event, ui) {
+        var answerNumber = parseInt(ui.helper.attr("number"));
+        for(var s=0; s < selectedAnswers.length; s++) {
+          if(selectedAnswers[s] == answerNumber) {
+            selectedQuestion = s;
+            break;
+          }
+        }
+        if(selectedQuestion != null) {
+          selectedAnswers[selectedQuestion] = 0;
+          $('.cwImage' + (selectedQuestion+1)).removeClass('wrongImage').removeClass('correctImage');
+          $sel.questions.eq(selectedQuestion).droppable('option', 'accept', $sel.answers)
+        }
+     }
+     ,stop: function(event, ui) {
+//      console.log("stop")
+        if(selectedQuestion != null) {
+          selectedAnswers[selectedQuestion] = parseInt(ui.helper.attr("number"));
+          grade(ui.helper,  $sel.questions.eq(selectedQuestion));
+        }
+     }
+   });
+
+   $sel.questions.droppable({
+     hoverClass: 'dropAnswerActive',
+     tolerance: "intersect",
+     accept: $sel.answers,
+     drop: function(event, ui) {
+      //console.log("drop")
+      selectedQuestion = null;
+      grade(ui.helper, $(this));
+     }
+   });
+
+   var grade = function($button, $question) {
+    var selectedAnswer = parseInt($button.attr('number'));
+    var answerPosition = parseInt($question.attr('number')) - 1;
+
+    selectedAnswers[answerPosition] = selectedAnswer;
+    $question.droppable('option', 'accept', null);
+
+    // insert positioning
+    $button.offset({
+      top: $question.offset().top - 5,
+      left: $question.offset().left - 8
+    });
+
+    var correctAnswersCount = 0, notAllCorrect = 0;
+    for(var a = 0; a < selectedAnswers.length; a++) {
+      // if question has a answer
+      if(selectedAnswers[a] != 0) {
+        // if answer is correct
+        if(selectedAnswers[a] === correctAnswers[a]) {
+          // turn on icon
+          $('.cwImage' + (a+1)).removeClass('wrongImage').addClass('correctImage');
+          // increment correct answer counter
+          correctAnswersCount++;
+          notAllCorrect++;
+          // if correct answer is also the currently selected button
+          if(selectedAnswer === selectedAnswers[a]) {
+            // prevent from further dragging
+            $button.draggable('disable');
+          }
+        } else {
+          $('.cwImage' + (a+1)).removeClass('correctImage').addClass('wrongImage');
+          notAllCorrect++;
+        }
+      }
+    }
+    if(correctAnswersCount === 7) {
+      $sel.answersCorrect.show();
+    }
+// if(notAllCorrect === 7){location.reload();}
+  }
+ });
+    </script>
+    </head>
+    <body>
+    	<div id="wrapper">
+   <div id="textTop">      Now it is time for the catheter insertion. <span class="instructions">Click and drop the following steps in the proper order as described in the video.</div>
+       <div id ="allAnswers">
+           <div class="answers"><span class="cwImage1"></span><div class="dragAnswer" id="a1" number="1"></div></div>
+           <div class="answers"><span class="cwImage2"></span><div class="dragAnswer" id="a2" number="2"></div></div>
+           <div class="answers"><span class="cwImage3"></span><div class="dragAnswer" id="a3" number="3"></div></div>
+           <div class="answers"><span class="cwImage4"></span><div class="dragAnswer" id="a4" number="4"></div></div>
+           <div class="answers"><span class="cwImage5"></span><div class="dragAnswer" id="a5" number="5"></div></div>
+           <div class="answers"><span class="cwImage6"></span><div class="dragAnswer" id="a6" number="6"></div></div>
+           <div class="answers"><span class="cwImage7"></span><div class="dragAnswer" id="a7" number="7"></div></div>
+       </div>
+
+       <div id ="allQuestions">
+              <div class="questionText"><div class="answerTitle">Activate the needle safety lock.</div></div>
+              <div class="questionAnswer"><div class="dropAnswer" id="q1" number="1"> </div></div> 
+              <div class="questionText"><div class="answerTitle">Visualize the &quot;flash&quot;.</div></div>
+              <div class="questionAnswer"><div class="dropAnswer" id="q2" number ="2"></div></div>
+              <div class="questionText">  <div class="answerTitle">Hold the catheter using the fingergrips on either side of the base.</div></div>
+              <div class="questionAnswer"><div class="dropAnswer" id="q3" number= "3"></div></div>
+              <div class="questionText"> <div class="answerTitle">Remove tourniquet from the patient.</div></div>
+              <div class="questionAnswer"><div class="dropAnswer" id="q4" number="4"></div></div>
+              <div class="questionText"> <div class="answerTitle">Insert the needle with bevel up at 45 degrees.</div></div>
+              <div class="questionAnswer"><div class="dropAnswer" id ="q5" number="5"></div></div>
+              <div class="questionText"> <div class="answerTitle">Place pressure above site and remove the needle.</div></div>
+              <div class="questionAnswer"><div class="dropAnswer" id ="q6" number="6"></div></div>
+              <div class="questionText"> <div class="answerTitle">Use forefinger to thread catheter into vein.</div></div>
+              <div class="questionAnswer"><div class="dropAnswer" id ="q7" number="7"></div></div>
+        </div>
+        <div id="answersCorrect"> 
+           Fantastic! The PIV catheter is now successfully inserted.
+        </div>     
+        
+    	<!--end of wrapper-->
+    	</div>
+      
+    </body>
+</html>

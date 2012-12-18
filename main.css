@@ -1,0 +1,106 @@
+body {
+ font-family: arial;
+ font-size: 13px;
+ color:#000;
+}
+#wrapper {
+	width: 550px;
+	height: 430px;
+
+}
+table {
+	border-collapse: collapse;
+}
+
+.dragAnswer {
+	width: 107px;
+	height: 58px;
+	cursor: pointer;
+}
+#allAnswers {float:left;
+width:90px;
+}
+#allQuestions {
+	float: left;
+	margin:6px 0px 0px 30px;
+	width:430px;
+}
+
+
+.instructions {font-style: italic;}
+#a1 {background-image: url('step1.png');}
+#a2 {background-image: url('step2.png');}
+#a3 {background-image: url('step3.png');}
+#a4 {background-image: url('step4.png');}
+#a5 {background-image: url('step5.png');}
+#a6 {background-image: url('step6.png');}
+#a7 {background-image: url('step7.png');}
+
+.dropAnswer {
+	width: 82px;
+	height: 37px;
+	background-image: url('drag.png');
+	margin-bottom:13px;
+	
+}
+
+.dropAnswerActive {
+	background-image: url('drag-over.png');
+	width: 82px;
+	height: 37px;
+}
+
+.answers {
+	padding-right: 10px;
+}
+
+.questionAnswer {
+	width: 90px;
+	margin-bottom:9px;
+	float:right;
+}
+.questionText {
+	width:300px;
+	float:right;
+}
+
+
+.correctImage {
+    background-image: url('correct.png');
+    width: 29px;
+    height: 28px;
+    position: absolute;
+    left:240px;
+    z-index: 40;
+}
+
+.wrongImage {
+    background-image: url('incorrect.png');
+    width: 29px;
+    height: 28px;
+    position: absolute;
+   left:240px;
+    z-index: 40;
+}
+.exampleLabel {
+  margin-top:20px;
+  font-size:14px;
+  font-weight:bold;
+} 
+.answerTitle {
+	font-weight: bold;
+	padding: 10px 0px 0px 30px;
+}
+#answersCorrect {
+	position: absolute;
+	top: 49px;
+	width: 135px;
+	height: 365px;
+	display: none;
+    padding:10px;
+	border: 2px solid #cdcdcd;
+	left: 8px;
+    background-color:#efefef;
+    font-style: italic;
+    font-weight: bold;
+}
