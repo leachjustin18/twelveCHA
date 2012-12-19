@@ -1,1 +1,3 @@
 Using jQuery UI, created a test that allows the user to drop and button onto a droppable area. Once dropped it will determine if it's correct or incorrect. If incorrect it allows the user to move the button to another area.
+
+If you don't get all of them right, a box will appear that allows you to reset the test. Once the reset is pressed it will move all of the steps back to there orginal location by animating them. Then it will remove all correct/incorrect images, reset values, and allow the dropped areas to accept the steps again.

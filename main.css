@@ -8,25 +8,32 @@ body {
 	height: 430px;
 
 }
-table {
-	border-collapse: collapse;
-}
 
 .dragAnswer {
-	width: 107px;
-	height: 58px;
+	width: 95px;
+	height: 46px;
 	cursor: pointer;
 }
-#allAnswers {float:left;
+#allAnswers {
+float:left;
 width:90px;
+margin-left:120px;
 }
 #allQuestions {
-	float: left;
-	margin:6px 0px 0px 30px;
-	width:430px;
+	float: right;
+	margin-top:6px;
+	width:320px;
 }
-
-
+#doubleLine {
+	font-weight:bold;
+	padding: 3px 0px 0px 30px;
+}
+#incorrect {display:none;}
+#correct{display:none;}
+#reset {
+	padding: 10px 20px;
+	font-weight: bold;
+}
 .instructions {font-style: italic;}
 #a1 {background-image: url('step1.png');}
 #a2 {background-image: url('step2.png');}
@@ -40,7 +47,7 @@ width:90px;
 	width: 82px;
 	height: 37px;
 	background-image: url('drag.png');
-	margin-bottom:13px;
+
 	
 }
 
@@ -57,10 +64,9 @@ width:90px;
 .questionAnswer {
 	width: 90px;
 	margin-bottom:9px;
-	float:right;
 }
 .questionText {
-	width:300px;
+	width:260px;
 	float:right;
 }
 
@@ -70,7 +76,7 @@ width:90px;
     width: 29px;
     height: 28px;
     position: absolute;
-    left:240px;
+    left:300px;
     z-index: 40;
 }
 
@@ -79,7 +85,7 @@ width:90px;
     width: 29px;
     height: 28px;
     position: absolute;
-   left:240px;
+    left:300px;
     z-index: 40;
 }
 .exampleLabel {
@@ -93,9 +99,9 @@ width:90px;
 }
 #answersCorrect {
 	position: absolute;
-	top: 49px;
-	width: 135px;
-	height: 365px;
+	top: 46px;
+	width: 195px;
+	height: 290px;
 	display: none;
     padding:10px;
 	border: 2px solid #cdcdcd;

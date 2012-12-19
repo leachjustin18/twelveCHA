@@ -6,30 +6,47 @@
         <title>Untitled</title>
         <script src="media/jquery-1.8.min.js" type="text/javascript" charset="utf-8" ></script>
         <script src="media/jquery-ui.custom.min.js" type="text/javascript" charset="utf-8" ></script>
-
-         <link rel="stylesheet" type="text/css" href="media/main.css"/>
+        <link rel="stylesheet" type="text/css" href="media/main.css"/>
         <link href='http://fonts.googleapis.com/css?family=Candal' rel='stylesheet' type='text/css'>
         <script>
-    $(function() {
-   var selectedAnswers = [0,0,0,0,0,0,0], 
-     correctAnswers = [6, 3, 1, 7, 2, 5, 4];
-     selectedQuestion = null;
-   var $sel = {
-     answers: $('#a1, #a2, #a3, #a4, #a5, #a6, #a7'),
-     questions: $('#q1, #q2, #q3, #q4, #q5, #q6, #q7'),
-     ciImage : $('.cwImage1, .cwImage2, .cwImage3, .cwImage4, .cwImage5, .cwImage6, .cwImage7'), 
-     allQuestions: $('.questions'),
-     explanation: $('.explanation'),
-     principles: $('.principles'),
-     exampleContent: $('#exampleContent'),
-     answersCorrect : $('#answersCorrect')
-   }
-
-   $sel.answers.draggable({
-     revert: "invalid"
-     ,start: function(event, ui) {
+  $(function() {
+    var selectedAnswers = [0, 0, 0, 0, 0, 0, 0],
+      correctAnswers = [6, 3, 7, 2, 5, 1, 4],
+      selectedQuestion = null;
+    var $sel = {
+      answers: $('#a1, #a2, #a3, #a4, #a5, #a6, #a7'),
+      questions: $('#q1, #q2, #q3, #q4, #q5, #q6, #q7'),
+      ciImage: $('.cwImage1, .cwImage2, .cwImage3, .cwImage4, .cwImage5, .cwImage6, .cwImage7'),
+      allQuestions: $('.questions'),
+      explanation: $('.explanation'),
+      principles: $('.principles'),
+      exampleContent: $('#exampleContent'),
+      answersCorrect: $('#answersCorrect'),
+      correct: $('#correct'),
+      incorrect: $('#incorrect')
+    }
+    $sel.questions.droppable({
+      hoverClass: 'dropAnswerActive',
+      tolerance: "intersect",
+      accept: $sel.answers,
+      drop: function(event, ui) {
+        ui.helper.removeAttr('dropped', true);
+        selectedQuestion = null;
+        grade(ui.helper, $(this));
+        if(!ui.draggable.data("originalPosition")) {
+          ui.draggable.data("originalPosition", ui.draggable.data("draggable").originalPosition);
+        }
+      },
+      out: function(event, ui) {
+        ui.helper.attr('dropped', true);
+      }
+    });
+    $sel.answers.draggable({
+      revert: "invalid",
+      start: function(event, ui) {
+        // ui.helper.attr('dropped', false);
         var answerNumber = parseInt(ui.helper.attr("number"));
-        for(var s=0; s < selectedAnswers.length; s++) {
+        for(var s = 0; s < selectedAnswers.length; s++) {
           if(selectedAnswers[s] == answerNumber) {
             selectedQuestion = s;
             break;
@@ -37,76 +54,95 @@
         }
         if(selectedQuestion != null) {
           selectedAnswers[selectedQuestion] = 0;
-          $('.cwImage' + (selectedQuestion+1)).removeClass('wrongImage').removeClass('correctImage');
+          $('.cwImage' + (selectedQuestion + 1)).removeClass('wrongImage').removeClass('correctImage');
           $sel.questions.eq(selectedQuestion).droppable('option', 'accept', $sel.answers)
         }
-     }
-     ,stop: function(event, ui) {
-//      console.log("stop")
-        if(selectedQuestion != null) {
-          selectedAnswers[selectedQuestion] = parseInt(ui.helper.attr("number"));
-          grade(ui.helper,  $sel.questions.eq(selectedQuestion));
-        }
-     }
-   });
-
-   $sel.questions.droppable({
-     hoverClass: 'dropAnswerActive',
-     tolerance: "intersect",
-     accept: $sel.answers,
-     drop: function(event, ui) {
-      //console.log("drop")
-      selectedQuestion = null;
-      grade(ui.helper, $(this));
-     }
-   });
-
-   var grade = function($button, $question) {
-    var selectedAnswer = parseInt($button.attr('number'));
-    var answerPosition = parseInt($question.attr('number')) - 1;
-
-    selectedAnswers[answerPosition] = selectedAnswer;
-    $question.droppable('option', 'accept', null);
-
-    // insert positioning
-    $button.offset({
-      top: $question.offset().top - 5,
-      left: $question.offset().left - 8
-    });
-
-    var correctAnswersCount = 0, notAllCorrect = 0;
-    for(var a = 0; a < selectedAnswers.length; a++) {
-      // if question has a answer
-      if(selectedAnswers[a] != 0) {
-        // if answer is correct
-        if(selectedAnswers[a] === correctAnswers[a]) {
-          // turn on icon
-          $('.cwImage' + (a+1)).removeClass('wrongImage').addClass('correctImage');
-          // increment correct answer counter
-          correctAnswersCount++;
-          notAllCorrect++;
-          // if correct answer is also the currently selected button
-          if(selectedAnswer === selectedAnswers[a]) {
-            // prevent from further dragging
-            $button.draggable('disable');
+      },
+      stop: function(event, ui) {
+        if($(this).attr("dropped")) {
+          if(selectedQuestion != null) {
+            selectedAnswers[selectedQuestion] = parseInt(ui.helper.attr("number"));
+            grade(ui.helper, $sel.questions.eq(selectedQuestion));
           }
-        } else {
-          $('.cwImage' + (a+1)).removeClass('correctImage').addClass('wrongImage');
-          notAllCorrect++;
         }
       }
-    }
-    if(correctAnswersCount === 7) {
-      $sel.answersCorrect.show();
-    }
-// if(notAllCorrect === 7){location.reload();}
-  }
- });
+    });
+    var grade = function($button, $question) {
+        var selectedAnswer = parseInt($button.attr('number'));
+        var answerPosition = parseInt($question.attr('number')) - 1;
+        selectedAnswers[answerPosition] = selectedAnswer;
+        $question.droppable('option', 'accept', null);
+        // insert positioning
+        $button.offset({
+          top: $question.offset().top - 5,
+          left: $question.offset().left - 8
+        });
+        var correctAnswersCount = 0,
+          answeredCount = 0;
+        for(var a = 0; a < selectedAnswers.length; a++) {
+          // if question has a answer
+          if(selectedAnswers[a] != 0) {
+            // if answer is correct
+            answeredCount++;
+            if(selectedAnswers[a] === correctAnswers[a]) {
+              // turn on icon
+              $('.cwImage' + (a + 1)).removeClass('wrongImage').addClass('correctImage');
+              // increment correct answer counter
+              correctAnswersCount++;
+              // if correct answer is also the currently selected button
+              if(selectedAnswer === selectedAnswers[a]) {
+                // prevent from further dragging
+                $button.draggable('disable');
+              }
+            } else {
+              $('.cwImage' + (a + 1)).removeClass('correctImage').addClass('wrongImage');
+            }
+          }
+        }
+        if(correctAnswersCount === 7) {
+          $sel.answersCorrect.show();
+          $sel.correct.show();
+        } else if(answeredCount === 7) {
+          // show reset message
+          $sel.answersCorrect.show();
+          $sel.incorrect.show();
+        }
+      }
+      //This function is used to revert/animate the steps back to there orignal location
+    var revertDraggable = function($selector) {
+        $selector.each(function() {
+          var $this = $(this),
+            position = $this.data("originalPosition");
+          if(position) {
+            $this.animate({
+              left: position.left,
+              top: position.top
+            }, 500, function() {
+              $this.data("originalPosition", null);
+            });
+          }
+        });
+      }
+    $('#reset').click(function() {
+      $sel.answersCorrect.hide();
+      $sel.incorrect.hide();
+      //Remove the correct incorrect images
+      $sel.ciImage.removeClass('correctImage').removeClass('wrongImage');
+      // Move buttons back to their original location
+      revertDraggable($sel.answers);
+      // Set all buttons's draggable = true
+      $sel.answers.draggable("option", "disabled", false);
+      // Reset all selectedAnswers = 0
+      selectedAnswers = [0, 0, 0, 0, 0, 0, 0];
+      //Allow the questions to accept all answers again
+      $sel.questions.droppable('option', 'accept', $sel.answers)
+    });
+  });
     </script>
     </head>
     <body>
-    	<div id="wrapper">
-   <div id="textTop">      Now it is time for the catheter insertion. <span class="instructions">Click and drop the following steps in the proper order as described in the video.</div>
+      <div id="wrapper">
+   <div id="textTop">John has three more days of non-vesicant antimicrobial therapy, and his PIV site needs to be replaced. <span class="instructions">Click and drop the following steps in the proper order as described in the video.</div>
        <div id ="allAnswers">
            <div class="answers"><span class="cwImage1"></span><div class="dragAnswer" id="a1" number="1"></div></div>
            <div class="answers"><span class="cwImage2"></span><div class="dragAnswer" id="a2" number="2"></div></div>
@@ -116,29 +152,26 @@
            <div class="answers"><span class="cwImage6"></span><div class="dragAnswer" id="a6" number="6"></div></div>
            <div class="answers"><span class="cwImage7"></span><div class="dragAnswer" id="a7" number="7"></div></div>
        </div>
-
        <div id ="allQuestions">
-              <div class="questionText"><div class="answerTitle">Activate the needle safety lock.</div></div>
+              <div class="questionText"><div class="answerTitle">Maximize vein presentation</div></div>
               <div class="questionAnswer"><div class="dropAnswer" id="q1" number="1"> </div></div> 
-              <div class="questionText"><div class="answerTitle">Visualize the &quot;flash&quot;.</div></div>
+              <div class="questionText"><div class="answerTitle">Gather all your supplies.</div></div>
               <div class="questionAnswer"><div class="dropAnswer" id="q2" number ="2"></div></div>
-              <div class="questionText">  <div class="answerTitle">Hold the catheter using the fingergrips on either side of the base.</div></div>
+              <div class="questionText">  <div class="answerTitle">Prepare the area.</div></div>
               <div class="questionAnswer"><div class="dropAnswer" id="q3" number= "3"></div></div>
-              <div class="questionText"> <div class="answerTitle">Remove tourniquet from the patient.</div></div>
+              <div class="questionText"> <div class="answerTitle">Assess for pain control</div></div>
               <div class="questionAnswer"><div class="dropAnswer" id="q4" number="4"></div></div>
-              <div class="questionText"> <div class="answerTitle">Insert the needle with bevel up at 45 degrees.</div></div>
+              <div class="questionText"> <div class="answerTitle">Assess for site selection</div></div>
               <div class="questionAnswer"><div class="dropAnswer" id ="q5" number="5"></div></div>
-              <div class="questionText"> <div class="answerTitle">Place pressure above site and remove the needle.</div></div>
+              <div class="questionText"> <div class="answerTitle">Discuss the procedure with the patient and/or caregiver.</div></div>
               <div class="questionAnswer"><div class="dropAnswer" id ="q6" number="6"></div></div>
-              <div class="questionText"> <div class="answerTitle">Use forefinger to thread catheter into vein.</div></div>
-              <div class="questionAnswer"><div class="dropAnswer" id ="q7" number="7"></div></div>
+              <div class="questionText"> <div class="answerTitle">Prepare and prime the IV set.</div></div>
+              <div class="questionAnswer"><div class="dropAnswer" id ="q7" number="7"></div></div>    
         </div>
         <div id="answersCorrect"> 
-           Fantastic! The PIV catheter is now successfully inserted.
+            <div id="correct" >Great! You have discussed the procedure with John's caregivers, gathered all of your supplies, and prepared the site.</div>
+            <div id="incorrect">You have selected incorrect answers. Do you want to try again? <center><button id="reset">Reset</button></center></div>
         </div>     
-        
-    	<!--end of wrapper-->
-    	</div>
-      
+      </div>
     </body>
 </html>
